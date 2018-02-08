@@ -1,5 +1,6 @@
 #STRIKEGROUPGAME
 #https://pythonprogramming.net/pygame-python-3-part-1-intro/
+#https://www.pygame.org/docs/
 import pygame
 
 pygame.init()
@@ -13,6 +14,7 @@ white=(255,255,255)
 
 img = pygame.image.load('battleship.png')
 newimg = pygame.transform.scale(img,(275,75))
+newimg = pygame.transform.rotate(newimg, 90)
 def plane(x,y):
 	gameDisplay.blit(newimg,(x,y))
 
