@@ -9,21 +9,20 @@ pygame.init()
 display_width = 800
 display_height = 600
 
-gameDisplay = pygame.display.set_mode((display_width,display_height))
-pygame.display.set_caption("Fighter Ace")
-
 black = (0,0,0)
 white = (255,255,255)
 red = (255,0,0)
+blue = (135,206,250)
 
 plane_width = 73
 
 gameDisplay = pygame.display.set_mode((display_width,display_height))
+pygame.display.set_caption("Fighter Ace")
 clock = pygame.time.Clock()
 
-crashed = False
-
 PlaneImg= pygame.image.load('tomcat.jpg')
+
+
 
 def plane(x,y):
 	gameDisplay.blit(PlaneImg, (x,y))
@@ -48,37 +47,35 @@ def death():
 	message_display('You have Died')
 
 def game_loop():
-	x = (display_width * 0.45)
-	y = (display_height * 0.8)
+	x = (display_width * 0.4)
+	y = (display_height * 0.7)
 	x_change = 0
 
 	gameExit = False
 
 	while not gameExit:
-
-		car_speed = 0
-
-
-	while not crashed:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
-				crashed = True
+				pygame.quit()
+				quit()
+
 
 			if event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_LEFT:
-					x_change = -5
-				elif event.key == pygame.K_RIGHT:
-					x_change = 5
+					x_change = -8
+				if event.key == pygame.K_RIGHT:
+					x_change = 8
+
 			if event.type == pygame.KEYUP:
 				if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
 					x_change = 0
 
 		x += x_change
 
-		gameDisplay.fill(white)
-		car(x,y)	
+		gameDisplay.fill(blue)
+		plane(x,y)	
 
-		if x > display_width - car_width or x < 0:
+		if x > display_width - plane_width or x < 0:
 			gameExit = True
 
 		pygame.display.update()
