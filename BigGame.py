@@ -3,8 +3,12 @@
 #https://www.pygame.org/docs/
 
 #Images from:
-#collide rect
+#http://clipground.com/com-port-clipart.html+
+#http://bradlys-double-7.wikia.com/wiki/Bullet_Bill
+#http://www.vancitymommyd.com/7221/waves-clipart-02-12-2017/waves-clipart-waves-ocean-wave-clip-art-vector-free-clipart-images-clipartcow-3-plant-clipart/
+#https://www.pinterest.com/pin/312859505341393738/
 #http://docs.garagegames.com/torquex/official/content/documentation/TorqueX%202D/Tutorials/Airplane.html
+
 import pygame
 import time
 import random
@@ -12,20 +16,24 @@ global over
 pygame.init()
 
 
-
 height = 800
 width = 1200
 mainGame = pygame.display.set_mode((width,height))
+white = (255,255,255)
 black = (0,0,0)
 blue = (30,64,150)
 beach = (110,70,40)
-green = (30, 70, 40)
+treecolor = (30, 70, 40)
+green = (0,255,0)
+red = (255,0,0)
+HP = 100
+morale = 100
+
 
 def letters(message,x2,y2,fontsize):
-	message = str(message)
 	font = pygame.font.Font("freesansbold.ttf", fontsize)
-	message = font.render(message, True, black)
-	gameDisplay.blit(message, (x2, y2))
+	message = font.render(message, True, white)
+	mainGame.blit(message, (x2, y2))
 
 #Printing the battleship onto the window
 img = pygame.image.load('battleship.png')
@@ -48,6 +56,38 @@ def destroyer(w2,v2,d):
 	deimg = pygame.transform.rotate(dimg, d)
 	mainGame.blit(deimg, (w2,v2))
 
+wimg = pygame.image.load('Whale.png')
+wimg = pygame.transform.scale(wimg,(100,100))
+def dawhale(w3, v3):
+	mainGame.blit(wimg, (w3,v3))
+
+waveimg = pygame.image.load('rogueWave.png')
+waveimg = pygame.transform.scale(waveimg,(200,200))
+def dawave(w4,v4):
+	mainGame.blit(waveimg,(w4,v4))
+
+simg = pygame.image.load('StrayTorp.png')
+simg = pygame.transform.scale(simg, (100,100))
+def dastraytorp(w5,v5):
+	mainGame.blit(simg,(w5,v5))
+
+pimg = pygame.image.load('port.jpg')
+pimg = pygame.transform.scale(pimg,(200,200))
+def daport(w6,v6):
+	mainGame.blit(pimg,(w6,v6))
+
+def currentHealth(HP):
+	letters('Health:' + str(HP) + '/100:',120,700,24)
+	health = pygame.Rect(300,700,HP,20)
+	pygame.draw.rect(mainGame, red, health)
+
+def currentMorale(morale):
+	letters('Morale' + str(morale) + '/100:',120,750,24)
+	moralebar = pygame.Rect(300,750,morale,20)
+	pygame.draw.rect(mainGame,green,moralebar)
+
+
+
 d = 90
 ymove = 0
 dmove = 0
@@ -59,8 +99,17 @@ w1 = 600
 v1 = 500
 w2 = 400
 v2 = 500
+w3 = 600
+v3 = -2000
 a= -300
 b=-700
+w4 = 4000
+v4 = 500
+w5 = 5500
+v5 = 500
+w6 = 1000
+v6=-8000
+message = False
 clock = pygame.time.Clock()
 
 over = False
@@ -70,13 +119,24 @@ while not over:
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			over = True
+	if HP<= 0:
+		over = True
+		endGame = pygame.display.set_mode((width,height))
+		endGame.fill(red)
+
+	if morale <=0:
+		over = True
 	mainGame.fill(blue)
 #Turning Left and Right_________________________________
 	if event.type == pygame.KEYDOWN:
 		if event.key == pygame.K_LEFT:
 			xmove = -5
+			if w2 <= 120:
+				xmove = 0
 		elif event.key == pygame.K_RIGHT:
 			xmove = 5
+			if w >= 1000:
+				xmove = 0
 		#Moving Forward and Backwards_________________________________
 		#elif event.key == pygame.K_UP:
 			#ymove = -5
@@ -101,14 +161,16 @@ while not over:
 	v1 += ymove
 	v2 += ymove
 	
+	# Drawing the Beaches
 	rect1 = pygame.Rect(0,0,80,800)
 	rect2 = pygame.Rect(1120,0,80,800)
 	pygame.draw.rect(mainGame, beach, rect1)
 	pygame.draw.rect(mainGame, beach, rect2)
 
+	#Making the moving trees
 	if a < height:
 		tree = pygame.Rect(20,a, 40, 40)
-		pygame.draw.rect(mainGame, green, tree)
+		pygame.draw.rect(mainGame, treecolor, tree)
 		speed = 5
 		a = a+speed
 	else:
@@ -116,17 +178,69 @@ while not over:
 
 	if b < height:
 		tree1 = pygame.Rect(1140,b, 40, 40)
-		pygame.draw.rect(mainGame, green, tree1)
+		pygame.draw.rect(mainGame, treecolor, tree1)
 		b = b+speed
 	else:
 		b = b-height
 
+	#Hitting a whale
+	if v3<height:
+		v3 +=5
+	if v3>= 0 and v3<605:
+		dawhale(w3,v3)
+	if v3>= 600 and v3 <605:
+		message = 'You hit a whale!'
+		letters(message, 200, 400, 100)
+		message = True
+		morale = morale - 25
+		
 
+	#Rogue Wave
+	if w4 > 0:
+		w4-=5
+	if w4<=900 and w4 >100:
+		dawave(w4,v4)
+	if w4 >= 100 and w4<105:
+		message = 'A rogue wave hit you!'
+		letters(message, 100, 400, 100)
+		message = True
+		HP -= 25
+
+
+	#Stray Torp
+	if w5>0:
+		w5-=5
+	if w5 <=900 and w5>100:
+		dastraytorp(w5,v5)
+	if w5>=100 and w5<105:
+		message = 'A Stray Torp struck one of your ships!'
+		letters(message, 50, 400, 50)
+		message = True
+		HP -= 25
+
+	#Stopping at a port
+	if v6<height:
+		v6+=5
+	if v6>= 0 and v6<555:
+		daport(w6,v6)
+	if v6>=550 and v6<555:
+		message = 'Stopping at a port'
+		letters(message, 50, 400, 80)
+		message = True
+		HP+=50
+
+
+
+	currentHealth(HP)
+	currentMorale(morale)
 	battleship(w,v,d)
 	carrier(w1,v1,d)
 	destroyer(w2,v2,d)
 	clock.tick(60)
 	pygame.display.update()
+	if message == True:
+		pygame.time.delay(2000)
+		message = False
 	
 	if event.type == pygame.KEYDOWN:
 		if event.key == pygame.K_e: 
@@ -140,8 +254,12 @@ while not over:
 				gameDisplay.blit(mine1,(x1,y1))
 
 			def done():
+				global HP
 				global oops
 				letters('You hit a mine!',100,400,100)
+				HP = HP -50
+				pygame.display.update()
+				pygame.time.delay(2000)
 				oops = True
 
 			dm = 90
@@ -150,6 +268,7 @@ while not over:
 			xmove = 0
 			x = 200
 			y = 600
+
 
 			oops = False
 
@@ -182,7 +301,6 @@ while not over:
 						xmove = 0
 						dmovem = 0
 						ymove = 0
-
 
 
 				x += xmove
@@ -247,9 +365,9 @@ while not over:
 					done()
 				elif x<=220 and y<=100:
 					letters('Congrats! You made it through the mine maze!!', 20, 400, 50)
-					win = True
+					pygame.display.update()
+					pygame.time.delay(2000)
 					oops = True
-					over = True
 
 				pygame.display.update()
 				clock.tick(60)
