@@ -1,160 +1,147 @@
 import pygame
 import time
 import random
+global healthpoints
+class maze:
+	def __init__(self,HP):
+		self.height = 800
+		self.width = 1200
+		self.d = 90
+		self.healthpoints = HP
+		self.ymove = 0
+		self.dmove = 0
+		self.xmove = 0
+		self.x = 200
+		self.y = 600
+		self.blue = (30,64,150)
+		self.black =(0,0,0)
+		self.gameDisplay = pygame.display.set_mode((self.width,self.height))
+		self.img = pygame.image.load('battleship.png')
+		self.newimg = pygame.transform.scale(self.img,(100,30))
+		self.mine = pygame.image.load('SeaMine.png')
+		self.mine1 = pygame.transform.scale(self.mine,(20,20))
 
-pygame.init()
-global rect
-global over
-height = 800
-width = 1200
-gameDisplay = pygame.display.set_mode((width,height))
+	#printing the battleship onto the window
+	def battleship(self,x,y,d):
+		self.newestimg = pygame.transform.rotate(self.newimg, d)
+		self.gameDisplay.blit(self.newestimg,(x,y))
 
-blue = (30,64,150)
-black =(0,0,0)
-
-
-img = pygame.image.load('battleship.png')
-newimg = pygame.transform.scale(img,(110,30))
-#printing the battleship onto the window
-def battleship(x,y,d):
-	global rect
-	rect = newimg.get_rect()
-	rect.x = 200+x
-	rect.y = 600+y
-	gameDisplay.blit(newimg,rect)
-
-mine = pygame.image.load('SeaMine.png')
-mine1 = pygame.transform.scale(mine,(20,20))
-
-def sea_mine(x1,y1):
-	gameDisplay.blit(mine1,(x1,y1))
-
-def letters(message,x2,y2,fontsize):
-	message = str(message)
-	font = pygame.font.Font("freesansbold.ttf", fontsize)
-	message = font.render(message, True, black)
-	gameDisplay.blit(message, (x2, y2))
-
-def done():
-	global over
-	letters('You hit a mine!',100,400,100)
-	over=True
-
-d = 90
-ymove = 0
-dmove = 0
-xmove = 0
-x = 0
-y = 0
-clock = pygame.time.Clock()
-
-over = False
-
-
-while not over:
-
-	for event in pygame.event.get():
-		if event.type == pygame.QUIT:
-			over = True
 	
-#Turning Left and Right_________________________________
-	if event.type == pygame.KEYDOWN:
-		if event.key == pygame.K_LEFT:
-			xmove = -3
-			#dmove = 1
-		elif event.key == pygame.K_RIGHT:
-			xmove = 3
-			#dmove = -1
-		#Moving Forward and Backwards_________________________________
-		elif event.key == pygame.K_UP:
-			ymove = -3
-		elif event.key == pygame.K_DOWN:
-			ymove = 3
-		elif event.key == pygame.K_q:
-			dmove =0.5
-		elif event.key == pygame.K_e:
-			dmove = -0.5
 
-	if event.type == pygame.KEYUP:
-		if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_UP or event.key == pygame.K_DOWN:
-			xmove = 0
-			dmove = 0
-			ymove = 0
+	def sea_mine(self,x1,y1):
+		self.gameDisplay.blit(self.mine1,(x1,y1))
+
+	def gamemessage(self,message,x2,y2,fontsize):
+		self.font = pygame.font.Font("freesansbold.ttf", fontsize)
+		self.message = self.font.render(message, True, self.black)
+		self.gameDisplay.blit(self.message, (x2, y2))
+
+	def done(self):
+		maze.gamemessage(self,'You hit a mine!',100,400,100)
+		self.healthpoints -= 50
+		self.oops=True
+
+	def thegame(self):
+		pygame.init()
+		self.clock = pygame.time.Clock()
+		self.oops = False
+		while not self.oops:
+
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					self.oops = True
+			
+		#Turning Left and Right_________________________________
+				if event.type == pygame.KEYDOWN:
+					if event.key == pygame.K_LEFT:
+						self.xmove = -3
+						#dmove = 1s
+					elif event.key == pygame.K_RIGHT:
+						self.xmove = 3
+						#dmove = -1
+					#Moving Forward and Backwards_________________________________
+					elif event.key == pygame.K_UP:
+						self.ymove = -3
+					elif event.key == pygame.K_DOWN:
+						self.ymove = 3
+					elif event.key == pygame.K_q:
+						self.dmove =0.5
+					elif event.key == pygame.K_e:
+						self.dmove = -0.5
+
+				if event.type == pygame.KEYUP:
+					if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT or event.key == pygame.K_UP or event.key == pygame.K_DOWN or event.key == pygame.K_q or event.key == pygame.K_e:
+						self.xmove = 0
+						self.dmove = 0
+						self.ymove = 0
 
 
+			self.gameDisplay.fill(self.blue)
+			self.x += self.xmove
+			self.y += self.ymove
+			self.d += self.dmove
+			
+			maze.battleship(self,self.x,self.y,self.d)
+			#HORIZ
+			for f in range(20):
+				maze.sea_mine(self,f*40+200,100)
+			for k in range(23):
+				maze.sea_mine(self,k*40+110,750)
+			#VERT
+			for h in range(16):
+				maze.sea_mine(self,100,100+40*h)
+				maze.sea_mine(self,1000,100+40*h)
+			#Inside
+			for j in range(21):
+				maze.sea_mine(self,j*40+100,500)
+			for l in range(5):
+				maze.sea_mine(self,350,750-l*40)
+				maze.sea_mine(self,660,500+l*40)
+				maze.sea_mine(self,830,750-l*40)
+			for a in range(7):
+				maze.sea_mine(self,900,500-a*40)
+				maze.sea_mine(self,760, 100+a*40)
+				maze.sea_mine(self,460,185+a*40)
+				maze.sea_mine(self,300,140+a*40)
+			for b in range(4):
+				maze.sea_mine(self,580,500-b*40)
+				maze.sea_mine(self,600, 140+b*40)
+				maze.sea_mine(self,100+40*b,300)
+			
+			if self.x<= 110 or self.x>=990:
+				maze.done(self)
 
-	x += xmove
-	y += ymove
-	d += dmove
-	gameDisplay.fill(blue)
-	'''
-	for k in range(100):
-		coordsh = int(random.uniform(0,800))
-		coordsw = int(random.uniform(0,1200))
-		sea_mine(coordsw, coordsh)
-	'''
-	battleship(x,y,d)
-	#HORIZ
-	for f in range(20):
-		sea_mine(f*40+200,100)
-	for k in range(23):
-		sea_mine(k*40+110,750)
-	#VERT
-	for h in range(16):
-		sea_mine(100,100+40*h)
-		sea_mine(1000,100+40*h)
-	#Inside
-	for j in range(21):
-		sea_mine(j*40+100,500)
-	for l in range(5):
-		sea_mine(350,750-l*40)
-		sea_mine(660,500+l*40)
-		sea_mine(830,750-l*40)
-	for a in range(7):
-		sea_mine(900,500-a*40)
-		sea_mine(760, 100+a*40)
-		sea_mine(460,185+a*40)
-		sea_mine(300,140+a*40)
-	for b in range(4):
-		sea_mine(580,500-b*40)
-		sea_mine(600, 140+b*40)
-		sea_mine(100+40*b,300)
-	
-	if rect.x<= 110 or rect.x>=990:
-		done()
-	elif rect.x<=900 and rect.y>=480 and rect.y<=520:
-		done()
-	elif rect.y >=750:
-		done()
-	elif rect.x>=200 and rect.y<=120 and rect.y>=80:
-		done()
-	elif rect.x<=370 and rect.x>=330 and rect.y<=750 and rect.y>=570:
-		done()
-	elif rect.x<=680 and rect.x>=640 and rect.y<=660 and rect.y>=500:
-		done()
-	elif rect.x<=850 and rect.x>=810 and rect.y<=750 and rect.y>=570:
-		done()
-	elif rect.x<=920 and rect.x>=880 and rect.y<=500 and rect.y>=260:
-		done()
-	elif rect.x<=780 and rect.x>=740 and rect.y<=340 and rect.y>=100:
-		done()
-	elif rect.x<=480 and rect.x>=440 and rect.y<=425 and rect.y>=185:
-		done()
-	elif rect.x<=320 and rect.x>=280 and rect.y<=380 and rect.y>=140:
-		done()
-	elif rect.x<=600 and rect.x>=560 and rect.y<=500 and rect.y>=400:
-		done()
-	elif rect.x<=620 and rect.x>=580 and rect.y<=300 and rect.y>=140:
-		done()
-	elif rect.x<=220 and rect.x>=100 and rect.y<=320 and rect.y>=280:
-		done()
-	if rect.x<=220 and rect.y<=100:
-		letters('Congrats! You made it through the mine maze!!', 20, 400, 50)
-		over =True
-	
-	
-	pygame.display.update()
-	clock.tick(60)
-
-pygame.quit()
-quit()
+			elif self.x<=900 and self.y>=480 and self.y<=520:
+				maze.done(self)
+			elif self.y >=750:
+				maze.done(self)
+			elif self.x>=200 and self.y<=120 and self.y>=80:
+				maze.done(self)
+			elif self.x<=370 and self.x>=330 and self.y<=750 and self.y>=570:
+				maze.done(self)
+			elif self.x<=680 and self.x>=640 and self.y<=660 and self.y>=500:
+				maze.done(self)
+			elif self.x<=850 and self.x>=810 and self.y<=750 and self.y>=570:
+				maze.done(self)
+			elif self.x<=920 and self.x>=880 and self.y<=500 and self.y>=260:
+				maze.done(self)
+			elif self.x<=780 and self.x>=740 and self.y<=340 and self.y>=100:
+				maze.done(self)
+			elif self.x<=480 and self.x>=440 and self.y<=425 and self.y>=185:
+				maze.done(self)
+			elif self.x<=320 and self.x>=280 and self.y<=380 and self.y>=140:
+				maze.done(self)
+			elif self.x<=600 and self.x>=560 and self.y<=500 and self.y>=400:
+				maze.done(self)
+			elif self.x<=620 and self.x>=580 and self.y<=300 and self.y>=140:
+				maze.done(self)
+			elif self.x<=220 and self.x>=100 and self.y<=320 and self.y>=280:
+				maze.done(self)
+			if self.x<=220 and self.y<=100:
+				maze.gamemessage(self,'Congrats! You made it through the mine maze!!', 20, 400, 50)
+				self.oops =True
+			
+			
+			pygame.display.update()
+			self.clock.tick(60)
+		pygame.time.delay(2000)
