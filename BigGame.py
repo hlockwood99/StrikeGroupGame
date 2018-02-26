@@ -13,6 +13,7 @@ import pygame
 import time
 import random
 from MineMaze import maze
+from FighterPilotGame import Fighter
 global over
 global oops
 pygame.init()
@@ -156,7 +157,6 @@ def done():
 	message = True
 	oops = True
 
-
 while not over:
 
 	for event in pygame.event.get():
@@ -191,8 +191,6 @@ while not over:
 
 	if HP<= 0:
 		over = True
-		endGame = pygame.display.set_mode((width,height))
-		endGame.fill(red)
 
 	if morale <=0:
 		over = True
@@ -234,9 +232,12 @@ while not over:
 
 	r+=5
 	if r == 1000:
-		n = int(random.uniform(1,6))
+		n = int(random.uniform(1,7))
 		while n in randomlist:
-			n = int(random.uniform(1,6))
+			n = int(random.uniform(1,7))
+			if 1 in randomlist and 2 in randomlist and 3 in randomlist and 4 in randomlist and 5 in randomlist and 6 in randomlist:
+				over = True
+				break
 		randomlist.append(n)
 		r= 0
 
@@ -259,7 +260,7 @@ while not over:
 			w4-=5
 		if w4<=900 and w4 >100:
 			dawave(w4,v4)
-		if w4 >= 100 and w4<105:
+		if w4 >= 100 and w4<=105:
 			message = 'A rogue wave hit you!'
 			letters(message, 100, 400, 100)
 			message = True
@@ -297,11 +298,20 @@ while not over:
 		n= 0
 		pygame.display.update()
 		clock.tick(60)
+	elif n == 6:
+		fightergame = Fighter(HP)
+		fightergame.game_loop()
+		HP = fightergame.totalhealth
+		n=0
+		pygame.display.update()
+		clock.tick(60)
 
 	
 	#Makes Sure that the health does not go above 100
 	if HP>100:
 		HP=100
+		
+
 	if morale>100:
 		morale = 100
 
@@ -315,5 +325,12 @@ while not over:
 	if message == True:
 		pygame.time.delay(2000)
 		message = False
+mainGame.fill(red)
+if HP>0 and morale>0:
+	letters('You win!', 500, 400, 50)
+else:
+	letters('Game Over!', 500, 400, 50)
+pygame.display.update()
+pygame.time.delay(4000)
 pygame.quit()
 quit()

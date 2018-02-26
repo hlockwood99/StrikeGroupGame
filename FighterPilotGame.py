@@ -4,143 +4,131 @@
 import pygame
 import time
 import random
+class Fighter:
+	def __init__(self,HP):
+		self.display_width = 1200
+		self.display_height = 800
 
-pygame.init()
+		self.black = (0,0,0)
+		self.blue = (135,206,250)
+		self.red = (255,0,0)
+		self.plane_width = 85
 
-display_width = 1200
-display_height = 800
+		self.fighterdisplay = pygame.display.set_mode((self.display_width,self.display_height))
+		pygame.display.set_caption("Fighter Ace")
+		self.clock = pygame.time.Clock()
 
-black = (0,0,0)
-red = (255,0,0)
-blue = (135,206,250)
+		self.PlaneImg= pygame.image.load('tomcat.png')
+		self.misImg = pygame.image.load('aim-9.png')
+		self.mis1Img =pygame.transform.scale(self.misImg,(30,120))
+		self.mis1Img = pygame.transform.rotate(self.mis1Img, 180)
+		self.gameExit = False
+		self.x = (self.display_width * 0.4)
+		self.y = (self.display_height * 0.7)
+		self.x_change = 0
+		self.totalhealth = HP
+		self.mis_startx = random.randrange(0,self.display_width)
+		self.mis_starty = -600
+		self.mis_speed = 9
+		self.mis_width = 25
+		self.mis_height = 100
 
-plane_width = 85
+		self.misCount = 1
 
-gameDisplay = pygame.display.set_mode((display_width,display_height))
-pygame.display.set_caption("Fighter Ace")
-clock = pygame.time.Clock()
-
-PlaneImg= pygame.image.load('tomcat.png')
-misImg = pygame.image.load('aim-9.png')
-mis1Img =pygame.transform.scale(misImg,(30,120))
-mis1Img = pygame.transform.rotate(mis1Img, 180)
-
-
-
-
-def misDodged(count):
-	font = pygame.font.SysFont(None, 25)
-	text = font.render('Dodged: '+str(count), True, black)
-	gameDisplay.blit(text,(0,0))
-
-def missiles(misx, misy, misw, mish, color):
-	gameDisplay.blit(mis1Img, [misx, misy, misw, mish])
-	
-
-def plane(x,y):
-	gameDisplay.blit(PlaneImg, (x,y))
-
-def text_objects(text, font):
-	textSurface = font.render(text, True, black)
-	return textSurface, textSurface.get_rect()
-
-def message_display(text):
-	largeText = pygame.font.Font('freesansbold.ttf',25)
-	TextSurf, TextRect = text_objects(text, largeText)
-	TextRect.center = ((display_width/2),(display_height/2))
-	gameDisplay.blit(TextSurf, TextRect)
-
-	time.sleep(2)
-
-	pygame.display.update()
-
-def win():
-	message_display('You have dodged all the enemy missiles!')
-
-	time.sleep(2)
-
-	pygame.quit()
-	quit()	
-
-def death():
-	message_display('You have been shot down by enemy planes')
-
-	time.sleep(2)
-
-	pygame.quit()
-	quit()
-
-def game_loop():
-	x = (display_width * 0.4)
-	y = (display_height * 0.7)
-	x_change = 0
-
-	mis_startx = random.randrange(0,display_width)
-	mis_starty = -600
-	mis_speed = 9
-	mis_width = 25
-	mis_height = 100
-
-	misCount = 1
-
-	dodged = 0
-	
-	gameExit = False
-
-	while not gameExit:
-		for event in pygame.event.get():
-			if event.type == pygame.QUIT:
-				pygame.quit()
-				quit()
+		self.dodged = 0
 
 
-			if event.type == pygame.KEYDOWN:
-				if event.key == pygame.K_LEFT:
-					x_change = -8
-				if event.key == pygame.K_RIGHT:
-					x_change = 8
-
-			if event.type == pygame.KEYUP:
-				if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-					x_change = 0
-
-		x += x_change
-
-		gameDisplay.fill(blue)
-		missiles(mis_startx, mis_starty, mis_width, mis_height, red)
-		mis_starty += mis_speed
-		plane(x,y)
 
 
-		misDodged(dodged)
+	def misDodged(self,count):
+		self.font = pygame.font.SysFont(None, 25)
+		self.text = self.font.render('Dodged: '+str(count), True, self.black)
+		self.fighterdisplay.blit(self.text,(0,0))
 
+	def missiles(self,misx, misy, misw, mish, color):
+		self.fighterdisplay.blit(self.mis1Img, [misx, misy, misw, mish])
+		
 
-		if x > display_width - plane_width:
-			x_change =-1
-		if x < -70:
-			x_change = 1
+	def plane(self,x,y):
+		self.fighterdisplay.blit(self.PlaneImg, (x,y))
 
-		if mis_starty > display_height:
-			mis_starty = 0 - mis_height
-			mis_startx = random.randrange(0,display_width)
-			dodged +=1
-			mis_speed +=1
+	def text_objects(self,text, font):
+		self.textSurface = self.font.render(text, True, self.black)
+		return self.textSurface, self.textSurface.get_rect()
 
-			if dodged == 25:
-				win()
+	def message_display(self,text):
+		self.largeText = pygame.font.Font('freesansbold.ttf',25)
+		TextSurf, self.TextRect = Fighter.text_objects(self,text, self.largeText)
+		self.TextRect.center = ((self.display_width/2),(self.display_height/2))
+		self.fighterdisplay.blit(TextSurf, self.TextRect)
 
-
-		if y < mis_starty+mis_height:
-			print('y Crossover')
-
-			if x > mis_startx and x < mis_startx + mis_width or x+plane_width > mis_startx and x + plane_width < mis_startx+mis_width:
-				print('x Crossover')
-				death()
-
-
+		time.sleep(2)
 
 		pygame.display.update()
-		clock.tick(60)
-game_loop()
-pygame.quit()
-quit()
+
+	def win(self):
+		Fighter.message_display(self,'You have dodged all the enemy missiles!')
+		self.totalhealth -= 25
+		time.sleep(2)
+		self.gameExit = True
+
+	def death(self):
+		Fighter.message_display(self,'You have been shot down by enemy planes')
+
+		time.sleep(2)
+		self.gameExit = True
+
+
+	def game_loop(self):
+		while not self.gameExit:
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					pygame.quit()
+					quit()
+
+
+				if event.type == pygame.KEYDOWN:
+					if event.key == pygame.K_LEFT:
+						self.x_change = -8
+					if event.key == pygame.K_RIGHT:
+						self.x_change = 8
+
+				if event.type == pygame.KEYUP:
+					if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+						self.x_change = 0
+
+			self.x += self.x_change
+
+			self.fighterdisplay.fill(self.blue)
+			Fighter.missiles(self,self.mis_startx, self.mis_starty, self.mis_width, self.mis_height, self.red)
+			self.mis_starty += self.mis_speed
+			Fighter.plane(self,self.x,self.y)
+
+
+			Fighter.misDodged(self,self.dodged)
+
+
+			if self.x > self.display_width - self.plane_width:
+				self.x_change =-1
+			if self.x < -70:
+				self.x_change = 1
+
+			if self.mis_starty > self.display_height:
+				self.mis_starty = 0 - self.mis_height
+				self.mis_startx = random.randrange(0,self.display_width)
+				self.dodged +=1
+				self.mis_speed +=1
+
+				if self.dodged == 25:
+					Fighter.win(self,)
+
+
+			if self.y < self.mis_starty+self.mis_height:
+
+				if self.x > self.mis_startx and self.x < self.mis_startx + self.mis_width or self.x+self.plane_width > self.mis_startx and self.x + self.plane_width < self.mis_startx+self.mis_width:
+					Fighter.death(self)
+
+
+
+			pygame.display.update()
+			self.clock.tick(60)
